@@ -65,11 +65,11 @@ dates, temperatures = sort_data()
 figure = px.line(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature (C)"})
 st.plotly_chart(figure)
 
-if __name__ == "__main__":
-    scraped_info = scrape(URL)
-    extracted = extract(scraped_info)
-    content = read()
-    if extracted not in content:
-        time = timestamp()
-        store(extracted, time)
-    print(timestamp() + " " + extracted)
+#if __name__ == "__main__":
+    #scraped_info = scrape(URL)
+    #extracted = extract(scraped_info)
+    #content = read()
+    #if extracted not in content:
+        #time = timestamp()
+        #store(extracted, time)
+    #print(timestamp() + " " + extracted)
