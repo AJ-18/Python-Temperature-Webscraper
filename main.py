@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import selectorlib
 import plotly.express as px
+import sqlite3
 from datetime import datetime
 
 URL = "https://programmer100.pythonanywhere.com"
