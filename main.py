@@ -11,7 +11,8 @@ HEADERS = {
 
 st.title("Temperature Graph")
 
-
+# Establish connection
+connection = sqlite3.connect("data.db")
 
 def scrape(url):
     """Scrape the page source from the URL"""
@@ -33,22 +34,28 @@ def timestamp():
     return time_format
 
 def store(extracted, time):
-    with open("data.txt", "a") as file:
-        file.write(time + ", " + extracted + "\n")
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT 1 FROM Temperatures WHERE temperature = ?",(int(extracted),))
+    existing = cursor.fetchone()
+    if existing is None:
+        cursor.execute("INSERT INTO Temperatures VALUES(?,?)", (time, int(extracted)))
+        connection.commit()
 
 def read():
-    with open("data.txt", "r") as file:
-        return file.read()
+    # An object that executes SQL queries using execute method
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM Temperatures ORDER BY date")
+    rows = cursor.fetchall()
+    print(rows)
+    return rows
 
-def sort_data():
-    with open("data.txt", "r") as file:
-      lines = file.readlines()
-
+def sort_data(rows):
     dates = []
     temperature = []
 
-    for line in lines[1:]:
-        date, temp = line.strip().split(", ")
+    for date, temp in rows:
         dates.append(date)
         temperature.append(int(temp))
 
@@ -58,11 +65,10 @@ scraped_info = scrape(URL)
 extracted = extract(scraped_info)
 content = read()
 
-if extracted not in content:
-    time = timestamp()
-    store(extracted, time)
+time = timestamp()
+store(extracted, time)
 
-dates, temperatures = sort_data()
+dates, temperatures = sort_data(content)
 figure = px.line(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature (C)"})
 st.plotly_chart(figure)
 
